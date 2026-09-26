@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="128" fill="#0f172a"/>
+  <!-- Decorative subtle background ring -->
+  <circle cx="256" cy="256" r="210" stroke="#06b6d4" stroke-width="4" stroke-dasharray="12 12" opacity="0.3"/>
+  <circle cx="256" cy="256" r="185" stroke="#10b981" stroke-width="3" opacity="0.2"/>
+  <!-- Center Open Quran / Book -->
+  <path d="M256 340V160C220 135 150 135 100 160V340C150 315 220 315 256 340Z" fill="#06b6d4" opacity="0.9"/>
+  <path d="M256 340V160C292 135 362 135 412 160V340C362 315 292 315 256 340Z" fill="#0891b2"/>
+  <!-- Radiating Star of Knowledge -->
+  <circle cx="256" cy="115" r="22" fill="#10b981"/>
+  <circle cx="256" cy="115" r="32" stroke="#34d399" stroke-width="3" opacity="0.4"/>
+</svg>

@@ -1,0 +1,29 @@
+{
+  "id": "/",
+  "name": "رَوَايَا | رسالة ودراية",
+  "short_name": "رَوَايَا",
+  "description": "مشروع ومنصة رَوَايَا التربوية بقيادة أ. نرمين الحسيني. بناء جيل واعٍ يفهم دينه ويعيش بالقرآن.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0f172a",
+  "background_color": "#ffffff",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["education", "kids", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

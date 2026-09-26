@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-alexandria: 'Alexandria', system-ui, -apple-system, sans-serif;
+    --font-amiri: 'Amiri', serif;
+  }
+
+  html {
+    font-family: var(--font-alexandria);
+    scroll-behavior: smooth;
+  }
+}
+
+.font-quran {
+  font-family: var(--font-amiri);
+}
+
+.font-display {
+  font-family: var(--font-alexandria);
+}
+
+.font-naskh {
+  font-family: 'Noto Naskh Arabic', 'Scheherazade New', serif;
+}
+
+.font-body-ar {
+  font-family: 'Tajawal', 'Cairo', var(--font-alexandria);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dynamic radiating outward ripple effect (GPU-accelerated: transform + opacity only) */
+@keyframes ripple-wave {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.85;
+  }
+  40% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.3);
+    opacity: 0;
+  }
+}
+
+.animate-ripple-1 {
+  animation: ripple-wave 3.6s cubic-bezier(0.1, 0.4, 0.2, 1) infinite;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  will-change: transform, opacity;
+  transform-origin: center center;
+}
+
+.animate-ripple-2 {
+  animation: ripple-wave 3.6s cubic-bezier(0.1, 0.4, 0.2, 1) infinite;
+  animation-delay: 1.2s;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  will-change: transform, opacity;
+  transform-origin: center center;
+}
+
+.animate-ripple-3 {
+  animation: ripple-wave 3.6s cubic-bezier(0.1, 0.4, 0.2, 1) infinite;
+  animation-delay: 2.4s;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  will-change: transform, opacity;
+  transform-origin: center center;
+}
+
+/* Islamic Geometric Arabesque Background Pattern (Delicate & Spiritual) */
+.bg-arabesque {
+  background-color: #faf8f5;
+  background-image: radial-gradient(#d97706 0.65px, transparent 0.65px), radial-gradient(#059669 0.65px, #faf8f5 0.65px);
+  background-size: 26px 26px;
+  background-position: 0 0, 13px 13px;
+}
+
+.bg-arabesque-dark {
+  background-color: #0b1324;
+  background-image: radial-gradient(#d97706 0.75px, transparent 0.75px), radial-gradient(#10b981 0.75px, #0b1324 0.75px);
+  background-size: 28px 28px;
+  background-position: 0 0, 14px 14px;
+}
+
+/* Islamic 8-Point Star Geometric Texture Overlay */
+.islamic-pattern-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l7 14 15-5-5 15 14 7-14 7 5 15-15-5-7 14-7-14-15 5 5-15-14-7 14-7-5-15 15 5z' fill='%23b45309' fill-opacity='0.035' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+.islamic-pattern-overlay-emerald {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l7 14 15-5-5 15 14 7-14 7 5 15-15-5-7 14-7-14-15 5 5-15-14-7 14-7-5-15 15 5z' fill='%23059669' fill-opacity='0.04' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Dedicated Print Stylesheet for A4 Printable Treat */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-rawaya-sheet, #printable-rawaya-sheet * {
+    visibility: visible;
+  }
+  #printable-rawaya-sheet {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 1.5cm;
+    background: white !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Floating WhatsApp Entrance Animation (0.8s slide-up and fade-in from bottom corner) */
+@keyframes floating-entrance {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 50px, 0) scale(0.85);
+  }
+  65% {
+    opacity: 0.95;
+    transform: translate3d(0, -5px, 0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-floating-entrance {
+  animation: floating-entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+
