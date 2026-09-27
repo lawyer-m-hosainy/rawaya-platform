@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, Printer, Download, Sparkles, Heart, Star, CheckCircle, Gift } from 'lucide-react';
 import { RawayaLogo } from './RawayaLogo';
 
@@ -18,17 +18,32 @@ export const PrintableGiftModal: React.FC<PrintableGiftModalProps> = ({ isOpen, 
     const printContent = document.getElementById('printable-rawaya-sheet');
     if (!printContent) return;
     
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert('يرجى السماح بالنوافذ المنبثقة (Popups) للطباعة.');
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '1px';
+    iframe.style.height = '1px';
+    iframe.style.opacity = '0';
+    iframe.style.pointerEvents = 'none';
+    document.body.appendChild(iframe);
+
+    const iframeDoc = iframe.contentWindow?.document;
+    if (!iframeDoc) {
+      document.body.removeChild(iframe);
       return;
     }
+
+    // Get all stylesheets from the main document to ensure Tailwind is loaded
+    const styles = Array.from(document.head.querySelectorAll('style, link[rel="stylesheet"]'))
+      .map(node => node.outerHTML)
+      .join('\n');
     
-    printWindow.document.write(`
+    iframeDoc.write(`
       <html dir="rtl" lang="ar">
         <head>
-          <title>طباعة ورقة رَوَايَا</title>
-          ${document.head.innerHTML}
+          <title>طباعة مفكرة رَوَايَا</title>
+          ${styles}
           <style>
             body { background: white !important; padding: 0; margin: 0; display: flex; justify-content: center; }
             #printable-rawaya-sheet { border: none !important; box-shadow: none !important; width: 100%; max-width: 210mm; min-height: 297mm; }
@@ -39,15 +54,23 @@ export const PrintableGiftModal: React.FC<PrintableGiftModalProps> = ({ isOpen, 
         <body>
           ${printContent.outerHTML}
           <script>
+            // Wait a moment for styles/fonts to load before opening print dialog
             setTimeout(() => {
+              window.focus();
               window.print();
-              window.close();
             }, 800);
           </script>
         </body>
       </html>
     `);
-    printWindow.document.close();
+    iframeDoc.close();
+
+    // Clean up the iframe after the print dialog is likely closed
+    setTimeout(() => {
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+    }, 5000);
   };
 
   const daysOfWeek = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
