@@ -1,88 +1,118 @@
-import React, { useState } from 'react';
-import { Sparkles, Maximize2, X, MapPin, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, Maximize2, X, MapPin } from 'lucide-react';
+import { mediaService, Media } from '../services/mediaService';
 
 export const GallerySection: React.FC = () => {
-  const [activePhoto, setActivePhoto] = useState<string | null>(null);
+  const [activePhoto, setActivePhoto] = useState<Media | null>(null);
+  const [mediaList, setMediaList] = useState<Media[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const photos = [
-    {
-      url: '/src/assets/images/workshop_confidence_kids_1790367244854.jpg',
-      title: 'ورشة أنمّي ثقتي – سلسلة لِتَعَارَفُوا',
-      caption: 'الأطفال يكتبون في دفاتر أنشطتهم، يناقشون أفكارهم بثقة ويتعلمون مواجهة الخجل والتنمر.',
-      location: 'قاعة رَوَايَا – المنصورة',
-    },
-    {
-      url: '/src/assets/images/prayer_father_child_circle_1790367254432.jpg',
-      title: 'ملتقى «الصلاة رِباط» بين الآباء والأبناء',
-      caption: 'صلاة جماعة وتصحيح عملي لهيئات الركوع والسجود، وغرس الخشوع ومحبة الوقوف بين يدي الله.',
-      location: 'ملتقى رَوَايَا الأسري',
-    },
-    {
-      url: '/src/assets/images/hero_rawaya_learning_1790367225382.jpg',
-      title: 'حلقات التدبر التفاعلي لقصص القرآن',
-      caption: 'طرح الأسئلة الحوارية: ماذا نتعلم من الآية؟ وكيف تطبقها في بيتك ومدرستك ومع أصدقائك؟',
-      location: 'ورشة الفهم والتدبر',
-    },
-  ];
+  useEffect(() => {
+    loadMedia();
+  }, []);
+
+  const loadMedia = async () => {
+    try {
+      setLoading(true);
+      const data = await mediaService.getMedia(true);
+      setMediaList(data);
+    } catch (error) {
+      console.error('Error loading gallery:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <section className="py-20 bg-slate-50 border-b border-slate-200">
+    <section id="gallery" className="py-20 bg-slate-50 border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <p className="text-xs font-bold text-cyan-800 tracking-wider uppercase mb-2">
-            معرض الأنشطة والتجارب
+            معرض الفعاليات والنشاطات
           </p>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 font-display mb-4">
-            لحظات حقيقية من ورش وملتقيات «رَوَايَا»
+            لقطات حقيقية من ورش وفعاليات «رَوَايَا»
           </h2>
           <p className="text-base text-slate-600 leading-relaxed">
-            بيئة تفاعلية حية تمنح طفلك الأمان ليُعبّر، ويفهم، ويبني صداقات صالحة تعينه على الثبات.
+            بيئة تعليمية حية تعكس تفاعل أبنائنا وبناتنا، ونشاطات تصنع ذكريات تربوية على أرض الواقع.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {photos.map((photo, idx) => (
-            <div
-              key={idx}
-              onClick={() => setActivePhoto(photo.url)}
-              className="group relative rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-xs hover:shadow-md transition-all cursor-pointer"
-            >
-              <div className="relative h-64 overflow-hidden bg-slate-100">
-                <img
-                  src={photo.url}
-                  alt={photo.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                  <div className="p-2.5 rounded-full bg-slate-900/70 backdrop-blur-xs">
-                    <Maximize2 className="w-5 h-5" />
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-pulse flex items-center gap-2 text-cyan-600 font-bold">
+              جاري تحميل المعرض...
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {mediaList.map((mediaItem) => (
+              <div
+                key={mediaItem.id}
+                onClick={() => setActivePhoto(mediaItem)}
+                className="group relative rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
+              >
+                <div className="relative h-64 overflow-hidden bg-slate-100">
+                  {mediaItem.type === 'video' ? (
+                    <video
+                      src={mediaItem.url}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={mediaItem.url}
+                      alt={mediaItem.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                    />
+                  )}
+                  
+                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    <div className="p-2.5 rounded-full bg-slate-900/70 backdrop-blur-sm">
+                      <Maximize2 className="w-5 h-5" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-5 text-right flex flex-col justify-between h-full">
+                  <div>
+                    {mediaItem.location && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-cyan-700 font-semibold mb-1.5">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>{mediaItem.location}</span>
+                      </div>
+                    )}
+                    <h3 className="text-sm font-bold text-slate-900 mb-1.5">{mediaItem.title}</h3>
+                    {mediaItem.caption && (
+                      <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">{mediaItem.caption}</p>
+                    )}
                   </div>
                 </div>
               </div>
-
-              <div className="p-5 text-right">
-                <div className="flex items-center gap-1.5 text-[11px] text-cyan-700 font-semibold mb-1.5">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span>{photo.location}</span>
-                </div>
-                <h3 className="text-sm font-bold text-slate-900 mb-1.5">{photo.title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">{photo.caption}</p>
+            ))}
+            
+            {mediaList.length === 0 && (
+              <div className="col-span-full text-center py-12 text-slate-500 bg-white rounded-3xl border border-slate-200">
+                لا توجد صور في المعرض حالياً.
               </div>
-            </div>
-          ))}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal */}
       {activePhoto && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
           onClick={() => setActivePhoto(null)}
         >
           <div
-            className="relative max-w-4xl max-h-[90vh] bg-slate-900 rounded-2xl overflow-hidden p-2 shadow-2xl"
+            className="relative max-w-5xl w-full max-h-[90vh] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
             onClick={(e) => e.stopPropagation()}
+            dir="rtl"
           >
             <button
               onClick={() => setActivePhoto(null)}
@@ -90,12 +120,37 @@ export const GallerySection: React.FC = () => {
             >
               <X className="w-5 h-5" />
             </button>
-            <img
-              src={activePhoto}
-              alt="صورة مكبرة للورشة"
-              className="max-h-[80vh] w-auto mx-auto rounded-xl object-contain"
-              referrerPolicy="no-referrer"
-            />
+            
+            <div className="flex-1 overflow-hidden flex items-center justify-center bg-black">
+                {activePhoto.type === 'video' ? (
+                  <video
+                    src={activePhoto.url}
+                    controls
+                    autoPlay
+                    className="max-h-[70vh] w-full object-contain"
+                  />
+                ) : (
+                  <img
+                    src={activePhoto.url}
+                    alt={activePhoto.title}
+                    className="max-h-[70vh] w-auto mx-auto object-contain"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+            </div>
+            
+            <div className="p-6 bg-slate-900 text-white border-t border-slate-800 text-right">
+              <h3 className="text-lg font-bold mb-2">{activePhoto.title}</h3>
+              {activePhoto.caption && (
+                <p className="text-sm text-slate-300 leading-relaxed">{activePhoto.caption}</p>
+              )}
+              {activePhoto.location && (
+                <div className="flex items-center gap-1.5 text-[12px] text-cyan-400 font-semibold mt-3">
+                  <MapPin className="w-4 h-4" />
+                  <span>{activePhoto.location}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

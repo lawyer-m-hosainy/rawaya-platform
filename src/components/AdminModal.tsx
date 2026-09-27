@@ -3,6 +3,7 @@ import { X, LayoutDashboard, FileText, Image as ImageIcon, BookOpen, MessageSqua
 import { supabase } from '../lib/supabase';
 import { AdminArticles } from './admin/AdminArticles';
 import { AdminPrograms } from './admin/AdminPrograms';
+import { AdminMedia } from './admin/AdminMedia';
 // Import other tabs as they are created
 
 type Tab = 'dashboard' | 'articles' | 'media' | 'programs' | 'testimonials' | 'enrollments' | 'settings';
@@ -171,7 +172,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 )}
                 {activeTab === 'articles' && <AdminArticles />}
-                {activeTab === 'media' && <div className="p-4 border border-dashed rounded-lg text-center">المعرض قريباً</div>}
+                {activeTab === 'media' && <AdminMedia />}
                 {activeTab === 'programs' && <AdminPrograms />}
                 {activeTab === 'testimonials' && <div className="p-4 border border-dashed rounded-lg text-center">الشهادات قريباً</div>}
                 {activeTab === 'enrollments' && <div className="p-4 border border-dashed rounded-lg text-center">التسجيلات قريباً</div>}
