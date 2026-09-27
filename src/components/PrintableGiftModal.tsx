@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 import { X, Printer, Download, Sparkles, Heart, Star, CheckCircle, Gift } from 'lucide-react';
 import { RawayaLogo } from './RawayaLogo';
 
@@ -15,7 +15,39 @@ export const PrintableGiftModal: React.FC<PrintableGiftModalProps> = ({ isOpen, 
   if (!isOpen) return null;
 
   const handlePrint = () => {
-    window.print();
+    const printContent = document.getElementById('printable-rawaya-sheet');
+    if (!printContent) return;
+    
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('يرجى السماح بالنوافذ المنبثقة (Popups) للطباعة.');
+      return;
+    }
+    
+    printWindow.document.write(`
+      <html dir="rtl" lang="ar">
+        <head>
+          <title>طباعة ورقة رَوَايَا</title>
+          ${document.head.innerHTML}
+          <style>
+            body { background: white !important; padding: 0; margin: 0; display: flex; justify-content: center; }
+            #printable-rawaya-sheet { border: none !important; box-shadow: none !important; width: 100%; max-width: 210mm; min-height: 297mm; }
+            .no-print { display: none !important; }
+            @page { size: A4; margin: 0; }
+          </style>
+        </head>
+        <body>
+          ${printContent.outerHTML}
+          <script>
+            setTimeout(() => {
+              window.print();
+              window.close();
+            }, 800);
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   const daysOfWeek = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
