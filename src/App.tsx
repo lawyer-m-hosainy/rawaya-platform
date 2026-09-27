@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+﻿import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { ArticlePage } from './pages/ArticlePage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 export default function App() {
   return (
@@ -8,7 +9,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/article/:slug" element={<ArticlePage />} />
-      </Routes>
+        <Route path=" *\ element={<NotFoundPage />} />
+ </Routes>
     </BrowserRouter>
   );
 }
