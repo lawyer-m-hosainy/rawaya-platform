@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { X, LayoutDashboard, FileText, Image as ImageIcon, BookOpen, MessageSquare, Users, Settings, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { AdminArticles } from './admin/AdminArticles';
-import { AdminPrograms } from './admin/AdminPrograms';
-import { AdminMedia } from './admin/AdminMedia';
-import { AdminTestimonials } from './admin/AdminTestimonials';
-import { AdminEnrollments } from './admin/AdminEnrollments';
-import { AdminSettings } from './admin/AdminSettings';
+
+const AdminArticles = lazy(() => import('./admin/AdminArticles').then(m => ({ default: m.AdminArticles })));
+const AdminPrograms = lazy(() => import('./admin/AdminPrograms').then(m => ({ default: m.AdminPrograms })));
+const AdminMedia = lazy(() => import('./admin/AdminMedia').then(m => ({ default: m.AdminMedia })));
+const AdminTestimonials = lazy(() => import('./admin/AdminTestimonials').then(m => ({ default: m.AdminTestimonials })));
+const AdminEnrollments = lazy(() => import('./admin/AdminEnrollments').then(m => ({ default: m.AdminEnrollments })));
+const AdminSettings = lazy(() => import('./admin/AdminSettings').then(m => ({ default: m.AdminSettings })));
 // Import other tabs as they are created
 
 type Tab = 'dashboard' | 'articles' | 'media' | 'programs' | 'testimonials' | 'enrollments' | 'settings';
@@ -167,7 +168,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
 
               {/* Main Content */}
               <div className="flex-1 p-6 overflow-y-auto bg-white">
-                {activeTab === 'dashboard' && (
+                  <Suspense fallback={<div className=" flex items-center justify-center h-full text-slate-500 animate-pulse font-bold text-lg\>جاري تحميل الواجهة...</div>}>
+ {activeTab === 'dashboard' && (
                   <div className="text-center py-20 text-slate-500">
                     <LayoutDashboard size={48} className="mx-auto mb-4 opacity-50" />
                     <h3 className="text-xl font-medium text-slate-700">مرحباً بك في لوحة تحكم رَوَايَا</h3>
@@ -180,6 +182,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                 {activeTab === 'testimonials' && <AdminTestimonials />}
                 {activeTab === 'enrollments' && <AdminEnrollments />}
                 {activeTab === 'settings' && <AdminSettings />}
+ </Suspense>
               </div>
             </div>
           )}

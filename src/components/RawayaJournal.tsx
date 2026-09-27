@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { BookOpen, Clock, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { articleService, Article } from '../services/articleService';
@@ -46,7 +46,7 @@ export const RawayaJournal = () => {
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-pulse flex items-center gap-2 text-emerald-600 font-bold">
-              جاري تحميل المقالات...
+              
             </div>
           </div>
         ) : (

@@ -66,23 +66,31 @@ export function ArticlePage() {
       <Helmet>
         <title>{`${article.title} | رَوَايَا`}</title>
         <meta name="description" content={article.excerpt} />
-        
-        {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={article.title} />
         <meta property="og:description" content={article.excerpt} />
         <meta property="og:image" content={article.cover_image || 'https://rawaya.site/og-image.jpg'} />
-        
-        {/* Twitter */}
+        <meta property="og:url" content={`https://rawaya.site/article/${article.slug}`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={article.title} />
         <meta name="twitter:description" content={article.excerpt} />
         <meta name="twitter:image" content={article.cover_image || 'https://rawaya.site/og-image.jpg'} />
-
-        {/* Article specifics */}
         <meta property="article:published_time" content={article.created_at} />
         <meta property="article:author" content={article.author} />
         <meta property="article:section" content={article.category} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": article.title,
+            "image": [article.cover_image || "https://rawaya.site/og-image.jpg"],
+            "datePublished": article.created_at,
+            "dateModified": article.created_at,
+            "author": [{"@type": "Person", "name": article.author, "url": "https://rawaya.site"}],
+            "publisher": {"@type": "Organization", "name": "رَوَايَا", "logo": {"@type": "ImageObject", "url": "https://rawaya.site/logo.png"}},
+            "description": article.excerpt
+          })}
+        </script>
       </Helmet>
 
       <Navbar onOpenEnrollment={() => {}} />

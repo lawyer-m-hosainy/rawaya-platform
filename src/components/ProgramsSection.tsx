@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { programService, Program } from '../services/programService';
 import { Users, MapPin, Check, ArrowLeft, Sparkles } from 'lucide-react';
 
@@ -84,7 +84,7 @@ export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ onSelectProgra
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-pulse flex items-center gap-2 text-cyan-600 font-bold">
-              جاري تحميل البرامج...
+              
             </div>
           </div>
         ) : (
