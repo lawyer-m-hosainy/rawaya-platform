@@ -4,6 +4,9 @@ import { supabase } from '../lib/supabase';
 import { AdminArticles } from './admin/AdminArticles';
 import { AdminPrograms } from './admin/AdminPrograms';
 import { AdminMedia } from './admin/AdminMedia';
+import { AdminTestimonials } from './admin/AdminTestimonials';
+import { AdminEnrollments } from './admin/AdminEnrollments';
+import { AdminSettings } from './admin/AdminSettings';
 // Import other tabs as they are created
 
 type Tab = 'dashboard' | 'articles' | 'media' | 'programs' | 'testimonials' | 'enrollments' | 'settings';
@@ -174,9 +177,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                 {activeTab === 'articles' && <AdminArticles />}
                 {activeTab === 'media' && <AdminMedia />}
                 {activeTab === 'programs' && <AdminPrograms />}
-                {activeTab === 'testimonials' && <div className="p-4 border border-dashed rounded-lg text-center">الشهادات قريباً</div>}
-                {activeTab === 'enrollments' && <div className="p-4 border border-dashed rounded-lg text-center">التسجيلات قريباً</div>}
-                {activeTab === 'settings' && <div className="p-4 border border-dashed rounded-lg text-center">الإعدادات قريباً</div>}
+                {activeTab === 'testimonials' && <AdminTestimonials />}
+                {activeTab === 'enrollments' && <AdminEnrollments />}
+                {activeTab === 'settings' && <AdminSettings />}
               </div>
             </div>
           )}
