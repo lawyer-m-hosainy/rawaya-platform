@@ -20,15 +20,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnrollment }) => {
 
   // Exact navigation structure requested for an elite educational institution
   const navLinks: NavItem[] = [
-    { name: 'الرئيسية', href: '#hero', id: 'hero' },
-    { name: 'عن روايا', href: '#about', id: 'about' },
-    { name: 'المؤسِّسة', href: '#founder', id: 'founder' },
-    { name: 'منهجيتنا', href: '#methodology', id: 'methodology' },
-    { name: 'برامجنا', href: '#programs', id: 'programs' },
-    { name: 'الفعاليات', href: '#events', id: 'events' },
-    { name: 'أثر روايا', href: '#impact', id: 'impact' },
-    { name: 'المحتوى', href: '#insights', id: 'insights' },
-    { name: 'تواصل معنا', href: '#contact', id: 'contact' },
+    { name: 'الرئيسية', href: '/#hero', id: 'hero' },
+    { name: 'عن روايا', href: '/#about', id: 'about' },
+    { name: 'المؤسِّسة', href: '/#founder', id: 'founder' },
+    { name: 'منهجيتنا', href: '/#methodology', id: 'methodology' },
+    { name: 'برامجنا', href: '/#programs', id: 'programs' },
+    { name: 'الفعاليات', href: '/#events', id: 'events' },
+    { name: 'أثر روايا', href: '/#impact', id: 'impact' },
+    { name: 'المحتوى', href: '/#insights', id: 'insights' },
+    { name: 'تواصل معنا', href: '/#contact', id: 'contact' },
   ];
 
   // Smooth scroll handler with offset for sticky navbar
