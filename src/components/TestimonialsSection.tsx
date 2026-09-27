@@ -1,26 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Quote } from 'lucide-react';
-import { testimonialService, Testimonial } from '../services/testimonialService';
+import { useQuery } from '@tanstack/react-query';
+import { testimonialService } from '../services/testimonialService';
 
 export const TestimonialsSection: React.FC = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadTestimonials();
-  }, []);
-
-  const loadTestimonials = async () => {
-    try {
-      setLoading(true);
-      const data = await testimonialService.getTestimonials(true);
-      setTestimonials(data);
-    } catch (error) {
-      console.error('Error loading testimonials:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: testimonials = [], isLoading: loading } = useQuery({
+    queryKey: ['testimonials', { publishedOnly: true }],
+    queryFn: () => testimonialService.getTestimonials(true)
+  });
 
   return (
     <section id="testimonials" className="py-20 bg-slate-50 border-b border-slate-200">

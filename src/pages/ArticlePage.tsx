@@ -137,7 +137,11 @@ export function ArticlePage() {
               <img 
                 src={article.cover_image} 
                 alt={article.title} 
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover aspect-video"
+                loading="lazy"
+                decoding="async"
+                width={1280}
+                height={720}
               />
             </div>
           )}

@@ -64,9 +64,12 @@ export const GallerySection: React.FC = () => {
                     <img
                       src={mediaItem.url}
                       alt={mediaItem.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 aspect-[4/3]"
                       referrerPolicy="no-referrer"
                       loading="lazy"
+                      decoding="async"
+                      width={800}
+                      height={600}
                     />
                   )}
                   
@@ -133,8 +136,12 @@ export const GallerySection: React.FC = () => {
                   <img
                     src={activePhoto.url}
                     alt={activePhoto.title}
-                    className="max-h-[70vh] w-auto mx-auto object-contain"
+                    className="max-h-[70vh] w-auto mx-auto object-contain aspect-auto"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
+                    decoding="async"
+                    width={1920}
+                    height={1080}
                   />
                 )}
             </div>

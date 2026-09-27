@@ -16,8 +16,15 @@ export interface Article {
 }
 
 export const articleService = {
-  async getArticles(publishedOnly = true) {
-    let query = supabase.from('articles').select('*').order('created_at', { ascending: false });
+  async getArticles(publishedOnly = true, page = 1, limit = 20) {
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    let query = supabase
+      .from('articles')
+      .select('id, title, slug, category, excerpt, cover_image, author, read_time, is_published, created_at')
+      .order('created_at', { ascending: false })
+      .range(from, to);
+      
     if (publishedOnly) {
       query = query.eq('is_published', true);
     }

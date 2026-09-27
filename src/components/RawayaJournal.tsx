@@ -1,27 +1,17 @@
-﻿import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BookOpen, Clock, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { articleService, Article } from '../services/articleService';
+import { useQuery } from '@tanstack/react-query';
+import { articleService } from '../services/articleService';
 
 export const RawayaJournal = () => {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadArticles();
-  }, []);
-
-  const loadArticles = async () => {
-    try {
-      setLoading(true);
-      const data = await articleService.getArticles(true); // only published
-      setArticles(data.slice(0, 3)); // show only latest 3 on home page
-    } catch (error) {
-      console.error('Error loading articles:', error);
-    } finally {
-      setLoading(false);
+  const { data: articles = [], isLoading: loading } = useQuery({
+    queryKey: ['articles', { publishedOnly: true }],
+    queryFn: async () => {
+      const data = await articleService.getArticles(true, 1, 3);
+      return data;
     }
-  };
+  });
 
   return (
     <section id="insights" className="py-24 bg-slate-50 border-b border-slate-200">

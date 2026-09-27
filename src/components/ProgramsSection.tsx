@@ -1,31 +1,19 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { programService, Program } from '../services/programService';
 import { Users, MapPin, Check, ArrowLeft, Sparkles } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 interface ProgramsSectionProps {
   onSelectProgram: (programTitle: string) => void;
 }
 
 export const ProgramsSection: React.FC<ProgramsSectionProps> = ({ onSelectProgram }) => {
-  const [programs, setPrograms] = useState<Program[]>([]);
   const [filter, setFilter] = useState<'all' | 'kids' | 'teens' | 'parents'>('all');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadPrograms();
-  }, []);
-
-  const loadPrograms = async () => {
-    try {
-      setLoading(true);
-      const data = await programService.getPrograms(true);
-      setPrograms(data);
-    } catch (error) {
-      console.error('Error loading programs:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+  const { data: programs = [], isLoading: loading } = useQuery({
+    queryKey: ['programs', { activeOnly: true }],
+    queryFn: () => programService.getPrograms(true)
+  });
 
   const ageTiers = [
     { id: 'all', name: 'لجميع الفئات', count: `${programs.length} برامج` },

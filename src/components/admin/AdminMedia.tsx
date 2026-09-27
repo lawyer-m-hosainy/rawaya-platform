@@ -74,6 +74,18 @@ export function AdminMedia() {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
+    
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPG أو PNG أو WebP فقط.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('حجم الملف كبير جداً. الحد الأقصى المسموح به هو 5 ميجابايت.');
+      return;
+    }
+
     const isVideo = file.type.startsWith('video/');
     
     setUploadingFile(true);

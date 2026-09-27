@@ -1,6 +1,7 @@
-﻿import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { X, LayoutDashboard, FileText, Image as ImageIcon, BookOpen, MessageSquare, Users, Settings, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAdminGuard } from '../hooks/useAdminGuard';
 
 const AdminArticles = lazy(() => import('./admin/AdminArticles').then(m => ({ default: m.AdminArticles })));
 const AdminPrograms = lazy(() => import('./admin/AdminPrograms').then(m => ({ default: m.AdminPrograms })));
@@ -18,31 +19,17 @@ interface AdminModalProps {
 }
 
 export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAdmin, isLoading } = useAdminGuard();
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Check initial auth state
-    supabase.auth.getSession().then(({ data: { session } }: any) => {
-      setIsAuthenticated(!!session);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      setIsAuthenticated(!!session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
-    setLoading(true);
+    setLoginLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -52,7 +39,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
     } catch (error: any) {
       setAuthError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
     } finally {
-      setLoading(false);
+      setLoginLoading(false);
     }
   };
 
@@ -61,6 +48,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
   };
 
   if (!isOpen) return null;
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+        <div className="text-white text-xl font-bold animate-pulse">جاري التحقق من الصلاحيات...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-slate-900/60 backdrop-blur-sm" dir="rtl">
@@ -74,10 +68,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-800">لوحة تحكم رَوَايَا</h2>
-              {isAuthenticated && (
+              {isAdmin && (
                 <p className="text-xs text-emerald-600 font-medium flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  متصل
+                  متصل (مدير)
                 </p>
               )}
             </div>
@@ -93,7 +87,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
         {/* Content area */}
         <div className="flex flex-1 overflow-hidden">
           
-          {!isAuthenticated ? (
+          {!isAdmin ? (
             // Login Form
             <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50">
               <div className="w-full max-w-sm bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
@@ -133,10 +127,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                   
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loginLoading}
                     className="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors disabled:opacity-50"
                   >
-                    {loading ? 'جاري التحقق...' : 'دخول'}
+                    {loginLoading ? 'جاري التحقق...' : 'دخول'}
                   </button>
                 </form>
               </div>
@@ -168,7 +162,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
 
               {/* Main Content */}
               <div className="flex-1 p-6 overflow-y-auto bg-white">
-                  <Suspense fallback={<div className=" flex items-center justify-center h-full text-slate-500 animate-pulse font-bold text-lg\>جاري تحميل الواجهة...</div>}>
+                  <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 animate-pulse font-bold text-lg">جاري تحميل الواجهة...</div>}>
  {activeTab === 'dashboard' && (
                   <div className="text-center py-20 text-slate-500">
                     <LayoutDashboard size={48} className="mx-auto mb-4 opacity-50" />

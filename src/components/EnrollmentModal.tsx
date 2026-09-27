@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, CheckCircle2 } from 'lucide-react';
 import { programService, Program } from '../services/programService';
 import { enrollmentService } from '../services/enrollmentService';
+import { z } from 'zod';
 
 interface EnrollmentModalProps {
   isOpen: boolean;
@@ -43,8 +44,31 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
 
   if (!isOpen) return null;
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+    
+    // Zod Validation
+    const schema = z.object({
+      parentName: z.string().min(2, "الاسم مطلوب (على الأقل حرفين)"),
+      childName: z.string().min(2, "اسم الابن/الابنة مطلوب"),
+      phone: z.string().regex(/^(01|\+201)[0125][0-9]{8}$/, "رقم الواتساب يجب أن يكون مصرياً صحيحاً (مثال: 01012345678)"),
+      childAge: z.coerce.number().min(4, "العمر يجب أن يكون 4 سنوات على الأقل").max(18, "العمر يجب أن يكون 18 سنة كحد أقصى"),
+      programTitle: z.string().min(1, "يرجى اختيار البرنامج"),
+    });
+
+    const result = schema.safeParse(formData);
+    if (!result.success) {
+      const formattedErrors: Record<string, string> = {};
+      result.error.issues.forEach((issue) => {
+        formattedErrors[String(issue.path[0])] = issue.message;
+      });
+      setErrors(formattedErrors);
+      return;
+    }
+
     setSubmitting(true);
     
     try {
@@ -96,6 +120,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     onChange={e => setFormData({...formData, parentName: e.target.value})}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all"
                   />
+                  {errors.parentName && <p className="text-red-500 text-xs mt-1">{errors.parentName}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">رقم الواتساب *</label>
@@ -108,6 +133,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     onChange={e => setFormData({...formData, phone: e.target.value})}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all text-left"
                   />
+                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
               </div>
 
@@ -121,6 +147,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     onChange={e => setFormData({...formData, childName: e.target.value})}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all"
                   />
+                  {errors.childName && <p className="text-red-500 text-xs mt-1">{errors.childName}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">العمر *</label>
@@ -133,6 +160,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     onChange={e => setFormData({...formData, childAge: e.target.value})}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition-all"
                   />
+                  {errors.childAge && <p className="text-red-500 text-xs mt-1">{errors.childAge}</p>}
                 </div>
               </div>
 
@@ -150,6 +178,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                   ))}
                   {programs.length === 0 && <option value={selectedProgramTitle || 'برنامج عام'}>{selectedProgramTitle || 'برنامج عام'}</option>}
                 </select>
+                {errors.programTitle && <p className="text-red-500 text-xs mt-1">{errors.programTitle}</p>}
               </div>
 
               <button

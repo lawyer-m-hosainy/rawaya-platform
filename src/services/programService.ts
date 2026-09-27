@@ -17,8 +17,16 @@ export interface Program {
 }
 
 export const programService = {
-  async getPrograms(activeOnly = true) {
-    let query = supabase.from('programs').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+  async getPrograms(activeOnly = true, page = 1, limit = 20) {
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    let query = supabase
+      .from('programs')
+      .select('id, title, subtitle, category, age_range, format, duration, description, highlights, badge, is_active, sort_order')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false })
+      .range(from, to);
+      
     if (activeOnly) {
       query = query.eq('is_active', true);
     }
