@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, LayoutDashboard, FileText, Image as ImageIcon, BookOpen, MessageSquare, Users, Settings, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { AdminArticles } from './admin/AdminArticles';
+import { AdminPrograms } from './admin/AdminPrograms';
 // Import other tabs as they are created
 
 type Tab = 'dashboard' | 'articles' | 'media' | 'programs' | 'testimonials' | 'enrollments' | 'settings';
@@ -171,7 +172,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) => {
                 )}
                 {activeTab === 'articles' && <AdminArticles />}
                 {activeTab === 'media' && <div className="p-4 border border-dashed rounded-lg text-center">المعرض قريباً</div>}
-                {activeTab === 'programs' && <div className="p-4 border border-dashed rounded-lg text-center">البرامج قريباً</div>}
+                {activeTab === 'programs' && <AdminPrograms />}
                 {activeTab === 'testimonials' && <div className="p-4 border border-dashed rounded-lg text-center">الشهادات قريباً</div>}
                 {activeTab === 'enrollments' && <div className="p-4 border border-dashed rounded-lg text-center">التسجيلات قريباً</div>}
                 {activeTab === 'settings' && <div className="p-4 border border-dashed rounded-lg text-center">الإعدادات قريباً</div>}
