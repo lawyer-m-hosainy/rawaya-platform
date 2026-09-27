@@ -42,9 +42,9 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
