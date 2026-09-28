@@ -1,64 +1,93 @@
-// Cloudflare Pages Function for generating a dynamic sitemap
-export async function onRequest(context: any) {
-  // Use the environment variables from Cloudflare
-  const SUPABASE_URL = context.env.VITE_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = context.env.VITE_SUPABASE_ANON_KEY;
+const BASE_URL = 'https://rawaya.site';
+const SITEMAP_NAMESPACE = 'http://www.sitemaps.org/schemas/sitemap/0.9';
 
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    return new Response('Missing Supabase credentials', { status: 500 });
+interface ArticleSitemapEntry {
+  slug: string;
+  updated_at?: string | null;
+}
+
+function escapeXml(value: string) {
+  return value.replace(/[<>&'"]/g, (character) => {
+    const entities: Record<string, string> = {
+      '<': '&lt;',
+      '>': '&gt;',
+      '&': '&amp;',
+      "'": '&apos;',
+      '"': '&quot;',
+    };
+    return entities[character];
+  });
+}
+
+function formatDate(value: string | null | undefined, fallback: string) {
+  if (!value) return fallback;
+  const timestamp = Date.parse(value);
+  return Number.isNaN(timestamp) ? fallback : new Date(timestamp).toISOString().slice(0, 10);
+}
+
+function createSitemap(articles: ArticleSitemapEntry[], currentDate: string) {
+  const urls = [
+    `  <url>\n    <loc>${BASE_URL}/</loc>\n    <lastmod>${currentDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>`,
+    ...articles
+      .filter((article) => typeof article.slug === 'string' && article.slug.length > 0)
+      .map((article) => {
+        const location = `${BASE_URL}/article/${encodeURIComponent(article.slug)}`;
+        const lastmod = formatDate(article.updated_at, currentDate);
+        return `  <url>\n    <loc>${escapeXml(location)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+      }),
+  ];
+
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="${SITEMAP_NAMESPACE}">\n${urls.join('\n')}\n</urlset>`;
+}
+
+function sitemapResponse(articles: ArticleSitemapEntry[], isFallback = false) {
+  const currentDate = new Date().toISOString().slice(0, 10);
+  return new Response(createSitemap(articles, currentDate), {
+    headers: {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': isFallback ? 'public, max-age=60' : 'public, max-age=3600',
+      ...(isFallback ? { 'X-Sitemap-Status': 'fallback' } : {}),
+    },
+  });
+}
+
+export async function onRequest(context: any) {
+  const { VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY } = context.env;
+  if (!VITE_SUPABASE_URL || !VITE_SUPABASE_ANON_KEY) {
+    console.error('Sitemap: Supabase configuration is missing; serving the static sitemap.');
+    return sitemapResponse([], true);
   }
 
   try {
-    // Fetch published articles
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/articles?is_published=eq.true&select=slug,updated_at`,
+      `${VITE_SUPABASE_URL}/rest/v1/articles?is_published=eq.true&select=slug,updated_at`,
       {
         headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          apikey: VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${VITE_SUPABASE_ANON_KEY}`,
         },
-      }
+      },
     );
-
-    const articles = await response.json();
-
-    const baseUrl = 'https://rawaya.site';
-    const currentDate = new Date().toISOString().split('T')[0];
-
-    // Build the XML
-    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-
-    // Add static homepage
-    xml += `  <url>\n`;
-    xml += `    <loc>${baseUrl}/</loc>\n`;
-    xml += `    <lastmod>${currentDate}</lastmod>\n`;
-    xml += `    <changefreq>daily</changefreq>\n`;
-    xml += `    <priority>1.0</priority>\n`;
-    xml += `  </url>\n`;
-
-    // Add dynamic articles
-    if (Array.isArray(articles)) {
-      articles.forEach((article: any) => {
-        const lastmod = article.updated_at ? article.updated_at.split('T')[0] : currentDate;
-        xml += `  <url>\n`;
-        xml += `    <loc>${baseUrl}/article/${article.slug}</loc>\n`;
-        xml += `    <lastmod>${lastmod}</lastmod>\n`;
-        xml += `    <changefreq>weekly</changefreq>\n`;
-        xml += `    <priority>0.8</priority>\n`;
-        xml += `  </url>\n`;
-      });
+    if (!response.ok) {
+      console.error(`Sitemap: article request failed with status ${response.status}; serving the static sitemap.`);
+      return sitemapResponse([], true);
     }
 
-    xml += `</urlset>`;
+    const articles: unknown = await response.json();
+    if (!Array.isArray(articles)) {
+      console.error('Sitemap: article response was not an array; serving the static sitemap.');
+      return sitemapResponse([], true);
+    }
 
-    return new Response(xml, {
-      headers: {
-        'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600',
-      },
-    });
+    const validArticles = articles.filter(
+      (article): article is ArticleSitemapEntry =>
+        typeof article === 'object'
+        && article !== null
+        && typeof (article as ArticleSitemapEntry).slug === 'string',
+    );
+    return sitemapResponse(validArticles);
   } catch (error) {
-    return new Response('Error generating sitemap', { status: 500 });
+    console.error('Sitemap: failed to generate dynamic entries; serving the static sitemap.', error);
+    return sitemapResponse([], true);
   }
 }
